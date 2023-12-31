@@ -3055,4 +3055,8 @@ extern const u8 gText_ExpShareOff[];
 
 extern const u8 gText_BasePointsResetToZero[];
 
+extern const u8 gText_Paper[];
+extern const u8 gText_Rock[];
+extern const u8 gText_Scisors[];
+
 #endif // GUARD_STRINGS_H

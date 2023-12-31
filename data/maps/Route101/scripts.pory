@@ -1,304 +1,151 @@
-raw `
-.set LOCALID_BIRCH, 2
-.set LOCALID_ZIGZAGOON, 4
+mapscripts Route101_MapScripts {
+	MAP_SCRIPT_ON_FRAME_TABLE[
+		VAR_TEMP_0, 1:scr_meteor
 
-Route101_MapScripts::
-	map_script MAP_SCRIPT_ON_TRANSITION, Route101_OnTransition
-	map_script MAP_SCRIPT_ON_FRAME_TABLE, Route101_OnFrame
-	.byte 0
+	]
+}
 
-Route101_OnTransition:
-	call ProfBirch_EventScript_UpdateLocation
-	end
+const player = OBJ_EVENT_ID_PLAYER
 
-Route101_OnFrame:
-	map_script_2 VAR_ROUTE101_STATE, 0, Route101_EventScript_HideMapNamePopup
-	.2byte 0
-
-Route101_EventScript_HideMapNamePopup::
-	setflag FLAG_HIDE_MAP_NAME_POPUP
-	setvar VAR_ROUTE101_STATE, 1
-	end
-
-Route101_EventScript_StartBirchRescue::
-	lockall
-	playbgm MUS_HELP, TRUE
-	msgbox Route101_Text_HelpMe, MSGBOX_DEFAULT
+script scr_trainer_boy {
+	lock
+	delay(16)
+	if (var(VAR_TEMP_2) >= 1){
+		goto (scr_trainer_noexit)
+	}
+	setvar(VAR_TEMP_2, 1)
+	applymovement(player, mov_player_01) //Exclamacion
+	waitmovement(player)
+	delay(32)
+	setvar(VAR_0x8000, MUGSHOT_MINI_CHANO)
+	callnative(DrawMugshot2)
+	msgbox(msg_chano_trainer_0)
+	callnative(ClearMugshot)
 	closemessage
-	setobjectxy LOCALID_BIRCH, 0, 15
-	setobjectxy LOCALID_ZIGZAGOON, 0, 16
-	applymovement OBJ_EVENT_ID_PLAYER, Route101_Movement_EnterScene
-	applymovement LOCALID_BIRCH, Route101_Movement_BirchRunAway1
-	applymovement LOCALID_ZIGZAGOON, Route101_Movement_ZigzagoonChase1
-	waitmovement 0
-	applymovement LOCALID_ZIGZAGOON, Route101_Movement_ZigzagoonChaseInCircles
-	applymovement LOCALID_BIRCH, Route101_Movement_BirchRunInCircles
-	waitmovement 0
-	applymovement LOCALID_BIRCH, Common_Movement_WalkInPlaceFasterRight
-	waitmovement 0
-	applymovement LOCALID_ZIGZAGOON, Route101_Movement_ZigzagoonFaceBirch
-	applymovement LOCALID_BIRCH, Route101_Movement_BirchFaceZigzagoon
-	waitmovement 0
-	msgbox Route101_Text_PleaseHelp, MSGBOX_DEFAULT
+	delay(16)
+	applymovement(player, mov_player_02) //Camina un poco hacia delante
+	waitmovement(player)
+	delay(16)
+	setvar(VAR_0x8000, MUGSHOT_MINI_CHANO)
+	callnative(DrawMugshot2)
+	msgbox(msg_chano_trainer_1)
+	callnative(ClearMugshot)
 	closemessage
-	setvar VAR_ROUTE101_STATE, 2
-	releaseall
-	end
+	release
+}
 
-Route101_EventScript_PreventExitSouth::
-	lockall
-	msgbox Route101_Text_DontLeaveMe, MSGBOX_DEFAULT
-	closemessage
-	applymovement OBJ_EVENT_ID_PLAYER, Route101_Movement_PreventExitSouth
-	waitmovement 0
-	releaseall
-	end
+script scr_trainer_noexit {
+	applymovement(player, player_mov_noexit)
+}
 
-Route101_EventScript_PreventExitWest::
-	lockall
-	msgbox Route101_Text_DontLeaveMe, MSGBOX_DEFAULT
-	closemessage
-	applymovement OBJ_EVENT_ID_PLAYER, Route101_Movement_PreventExitWest
-	waitmovement 0
-	releaseall
-	end
-
-Route101_EventScript_PreventExitNorth::
-	lockall
-	msgbox Route101_Text_DontLeaveMe, MSGBOX_DEFAULT
-	closemessage
-	applymovement OBJ_EVENT_ID_PLAYER, Route101_Movement_PreventExitNorth
-	waitmovement 0
-	releaseall
-	end
-
-Route101_Movement_PreventExitSouth:
-	walk_up
-	step_end
-
-Route101_Movement_PreventExitWest:
+movement player_mov_noexit {
 	walk_right
-	step_end
+}
 
-Route101_Movement_PreventExitNorth:
-	walk_down
-	step_end
+text msg_chano_trainer_0 {
+	format("Oh, un entrenador, que suerte he tenido, genial, ire a preguntarle si quiere un combate.")
+}
 
-Route101_Movement_ZigzagoonChaseInCircles:
-	walk_fast_up
-	walk_fast_up
-	walk_fast_up
-	walk_fast_right
-	walk_fast_right
-	walk_fast_right
-	walk_fast_down
-	walk_fast_down
-	walk_fast_left
-	walk_fast_left
-	walk_fast_left
-	walk_fast_up
-	walk_fast_up
-	walk_fast_right
-	walk_fast_right
-	walk_fast_right
-	walk_fast_down
-	walk_fast_down
-	walk_fast_left
-	walk_fast_left
-	walk_fast_left
-	walk_fast_up
-	walk_fast_up
-	walk_fast_right
-	walk_fast_right
-	walk_fast_right
-	walk_fast_down
-	walk_fast_down
-	walk_fast_left
-	walk_fast_left
-	step_end
+text msg_chano_trainer_1 {
+	format("Bien, veremos que dice, rattata tiene ganas de un combate tambien, esto sea emocionante.")
+}
 
-Route101_Movement_ZigzagoonChase1:
-	walk_fast_up
-	walk_fast_right
-	walk_fast_right
-	walk_fast_right
-	walk_fast_right
-	walk_fast_up
-	step_end
+movement mov_player_01 {
+	emote_exclamation_mark
+}
 
-@ Leftover data? This command is unused.
-	step_end
+movement mov_player_02 {
+	walk_right * 12
+}
 
-Route101_Movement_ZigzagoonFaceBirch:
-	walk_in_place_fast_left
-	walk_in_place_fast_left
-	walk_in_place_fast_left
-	walk_in_place_fast_left
-	step_end
-
-Route101_Movement_EnterScene:
-	walk_fast_up
-	walk_fast_up
-	walk_fast_up
-	walk_fast_up
-	walk_in_place_faster_left
-	step_end
-
-Route101_Movement_BirchRunInCircles:
-	walk_fast_up
-	walk_fast_up
-	walk_fast_right
-	walk_fast_right
-	walk_fast_right
-	walk_fast_down
-	walk_fast_down
-	walk_fast_left
-	walk_fast_left
-	walk_fast_left
-	walk_fast_up
-	walk_fast_up
-	walk_fast_right
-	walk_fast_right
-	walk_fast_right
-	walk_fast_down
-	walk_fast_down
-	walk_fast_left
-	walk_fast_left
-	walk_fast_left
-	walk_fast_up
-	walk_fast_up
-	walk_fast_right
-	walk_fast_right
-	walk_fast_right
-	walk_fast_down
-	walk_fast_down
-	walk_fast_left
-	walk_fast_left
-	walk_fast_left
-	step_end
-
-Route101_Movement_BirchRunAway1:
-	walk_fast_right
-	walk_fast_right
-	walk_fast_right
-	walk_fast_right
-	walk_fast_up
-	walk_fast_up
-	step_end
-
-@ Leftover data? This command is unused.
-	step_end
-
-Route101_Movement_BirchFaceZigzagoon:
-	walk_in_place_fast_right
-	walk_in_place_fast_right
-	walk_in_place_fast_right
-	walk_in_place_fast_right
-	step_end
-
-Route101_Movement_Unused1:
-	walk_up
-	walk_up
-	step_end
-
-Route101_Movement_Unused2:
-	walk_up
-	walk_left
-	walk_up
-	step_end
-
-Route101_EventScript_Youngster::
-	msgbox Route101_Text_TakeTiredPokemonToPokeCenter, MSGBOX_NPC
-	end
-
-Route101_EventScript_Boy::
-	msgbox Route101_Text_WildPokemonInTallGrass, MSGBOX_NPC
-	end
-
-Route101_EventScript_RouteSign::
-	msgbox Route101_Text_RouteSign, MSGBOX_SIGN
-	end
-
-Route101_EventScript_BirchsBag::
+script boy_trainer {
 	lock
 	faceplayer
-	setflag FLAG_SYS_POKEMON_GET
-	setflag FLAG_RESCUED_BIRCH
-	fadescreen FADE_TO_BLACK
-	removeobject LOCALID_ZIGZAGOON
-	setobjectxy OBJ_EVENT_ID_PLAYER, 6, 13
-	applymovement OBJ_EVENT_ID_PLAYER, Common_Movement_WalkInPlaceFasterLeft
-	waitmovement 0
-	special ChooseStarter
-	waitstate
-	applymovement LOCALID_BIRCH, Route101_Movement_BirchApproachPlayer
-	waitmovement 0
-	msgbox Route101_Text_YouSavedMe, MSGBOX_DEFAULT
-	special HealPlayerParty
-	setflag FLAG_HIDE_ROUTE_101_BIRCH_ZIGZAGOON_BATTLE
-	clearflag FLAG_HIDE_LITTLEROOT_TOWN_BIRCHS_LAB_BIRCH
-	setflag FLAG_HIDE_ROUTE_101_BIRCH_STARTERS_BAG
-	setvar VAR_BIRCH_LAB_STATE, 2
-	setvar VAR_ROUTE101_STATE, 3
-	clearflag FLAG_HIDE_MAP_NAME_POPUP
-	checkplayergender
-	call_if_eq VAR_RESULT, MALE, Route101_EventScript_HideMayInBedroom
-	call_if_eq VAR_RESULT, FEMALE, Route101_EventScript_HideBrendanInBedroom
-	warp MAP_LITTLEROOT_TOWN_PROFESSOR_BIRCHS_LAB, 6, 5
-	waitstate
-	release
-	end
+	clearflag(FLAG_PIDGEY)
+	setvar(VAR_TEMP_0, 2)
+	setvar(VAR_0x8000, MUGSHOT_MINI_CHANO)
+	callnative(DrawMugshot2)
+	msgbox(msg_chano_trainer_2)
+	callnative(ClearMugshot)
+	closemessage
+	msgbox(format("Bien, acepto tu propuesta."))
+	trainerbattle(TRAINER_BATTLE_CONTINUE_SCRIPT, TRAINER_SAWYER_1, 1, msg_boy_0, msg_boy_1, scr_meteor)
+	msgbox(format("Hola"))
+}
 
-Route101_EventScript_HideMayInBedroom::
-	setflag FLAG_HIDE_LITTLEROOT_TOWN_MAYS_HOUSE_RIVAL_BEDROOM
-	return
+text msg_chano_trainer_2 {
+	format("Oye, te apetece un combate?")
+}
 
-Route101_EventScript_HideBrendanInBedroom::
-	setflag FLAG_HIDE_LITTLEROOT_TOWN_BRENDANS_HOUSE_RIVAL_BEDROOM
-	return
+text msg_boy_0 {
+	format("No pienso perder")
+}
 
-Route101_Movement_BirchApproachPlayer:
-	walk_right
-	step_end
+text msg_boy_1 {
+	format("Y perdi de todas formas")
+}
 
-Route101_Text_HelpMe:
-	.string "H-help me!$"
+script scr_meteor {
+	lock
+	setvar(VAR_0x8000, MUGSHOT_MINI_CHANO)
+	callnative(DrawMugshot2)
+	msgbox(msgchano_2)
+	callnative(ClearMugshot)
+	closemessage
+	delay(32)
+	applymovement(player, mov_chano_0)
+	waitmovement(player)
+	delay(32)
+	setvar(VAR_0x8000, MUGSHOT_MINI_CHANO)
+	callnative(DrawMugshot)
+	msgbox(msg_chano_pidgey_0)
+	callnative(ClearMugshot)
+	closemessage
+	applymovement(player, mov_chano_1)
+	waitmovement(player)
+	delay(16)
+	setvar(VAR_0x8000, MUGSHOT_MINI_CHANO)
+	callnative(DrawMugshot)
+	msgbox(msg_chano_pidgey_1)
+	callnative(ClearMugshot)
+	closemessage
+	delay(60)
+	applymovement(player, mov_pidgey)
+	waitmovement(player)
+	delay(60)
+	setflag(FLAG_SPAWN_INVISIBLE)
+	setvar(VAR_TEMP_0, 2)
+	warp(MAP_OLDALE_TOWN_HOUSE1, 7, 4)
+}
 
-Route101_Text_PleaseHelp:
-	.string "Hello! You over there!\n"
-	.string "Please! Help!\p"
-	.string "In my BAG!\n"
-	.string "There's a POKé BALL!$"
+movement mov_chano_0 {
+	delay_16
+	face_left
+	delay_16
+	emote_exclamation_mark
+	delay_16 * 3
+}
 
-Route101_Text_DontLeaveMe:
-	.string "Wh-Where are you going?!\n"
-	.string "Don't leave me like this!$"
+movement mov_chano_1 {
+	walk_left * 7
+	face_up
+}
 
-Route101_Text_YouSavedMe:
-	.string "PROF. BIRCH: Whew…\p"
-	.string "I was in the tall grass studying wild\n"
-	.string "POKéMON when I was jumped.\p"
-	.string "You saved me.\n"
-	.string "Thanks a lot!\p"
-	.string "Oh?\p"
-	.string "Hi, you're {PLAYER}{KUN}!\p"
-	.string "This is not the place to chat, so come\n"
-	.string "by my POKéMON LAB later, okay?$"
+movement mov_pidgey {
+	emote_exclamation_mark
+	delay_16
+	face_up
+}
 
-Route101_Text_TakeTiredPokemonToPokeCenter:
-	.string "If POKéMON get tired, take them to\n"
-	.string "a POKéMON CENTER.\p"
-	.string "There's a POKéMON CENTER in OLDALE\n"
-	.string "TOWN right close by.$"
+text msg_chano_pidgey_0 {
+	format("Increible, un pigey salvaje, tengo que aprovecharlo")
+}
 
-Route101_Text_WildPokemonInTallGrass:
-	.string "Wild POKéMON will jump out at you in\n"
-	.string "tall grass.\p"
-	.string "If you want to catch POKéMON, you have\n"
-	.string "to go into the tall grass and search.$"
+text msg_chano_pidgey_1 {
+	format("Te ves fuerte, no quieres acaso unirte a mi equipo?")
+}
 
-Route101_Text_RouteSign:
-	.string "ROUTE 101\n"
-	.string "{UP_ARROW} OLDALE TOWN$"
+text msgchano_2{
+	format("Buen comba...")
+}
 
-`
